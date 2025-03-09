@@ -16,6 +16,7 @@ export default function index() {
     checkAuth()
   }, [])
   return (
-   <Redirect href="/(auth)"/>
+   <View>
+   </View>
   )
 }

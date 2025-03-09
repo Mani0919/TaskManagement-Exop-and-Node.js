@@ -37,7 +37,7 @@ const AddTaskScreen = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState("medium");
-
+  const [err, setErr] = useState("");
   // Animation values
   const translateY = useSharedValue(height);
   const opacity = useSharedValue(0);
@@ -114,23 +114,27 @@ const AddTaskScreen = () => {
         //   text1: "Task Created",
         //   text2: "Task has been created successfully.",
         // });
+        translateY.value = withTiming(height, { duration: 300 });
+        opacity.value = withTiming(0, { duration: 300 });
+    
+        // Small delay to allow animation
+        setTimeout(() => {
+          router.replace({
+            pathname: "/(Screens)",
+            params: {
+              screen: "Home",
+            },
+          });
+        }, 300);
+      }
+      else {
+        setErr(add.data.message);
       }
     } catch (error) {
       console.log(error);
     }
     // Animate out and go back
-    translateY.value = withTiming(height, { duration: 300 });
-    opacity.value = withTiming(0, { duration: 300 });
-
-    // Small delay to allow animation
-    setTimeout(() => {
-      router.replace({
-        pathname: "/(Screens)",
-        params: {
-          screen: "Home",
-        },
-      });
-    }, 300);
+ 
   };
 
   // Priority selection
@@ -197,7 +201,12 @@ const AddTaskScreen = () => {
                   ref={titleInputRef}
                   label="Task Title"
                   value={title}
-                  onChangeText={setTitle}
+                  onChangeText={(e)=>
+                  {
+                    setTitle(e)
+                    setErr("")
+                  }
+                  }
                   className="mb-4"
                   mode="outlined"
                   left={<TextInput.Icon icon="format-title" />}
@@ -207,7 +216,12 @@ const AddTaskScreen = () => {
                   ref={descriptionInputRef}
                   label="Description"
                   value={description}
-                  onChangeText={setDescription}
+                  onChangeText={(e)=>
+                  {
+                    setDescription(e)
+                    setErr("")
+                  }
+                  }
                   className="mb-4"
                   style={{ maxHeight: 200 }} // Increased height for large data
                   multiline
@@ -219,7 +233,11 @@ const AddTaskScreen = () => {
                   <Text className="text-base mb-2.5 font-bold">Priority</Text>
                   <PrioritySelector />
                 </View>
-
+                {err && (
+                  <View className=" bg-red-50 p-3 rounded-lg w-full max-w-sm">
+                    <Text className="text-red-600 text-center">{err}</Text>
+                  </View>
+                )}
                 <Button
                   mode="contained"
                   onPress={handleCreateTask}

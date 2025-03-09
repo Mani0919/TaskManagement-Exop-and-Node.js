@@ -138,7 +138,7 @@ export default function PasswordResetScreen() {
           type: "success",
           text1: "Password reset successfully",
         });
-        router.replace("/(auth");
+        router.replace("/(auth)");
         
       } else {
         setError(res.data.message);

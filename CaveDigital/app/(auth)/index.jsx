@@ -14,6 +14,7 @@ import AxiosService from "../../services/apiCalls";
 import Toast from "react-native-toast-message";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useGlobalContext } from "../../context/authcontext";
+import { ActivityIndicator } from "react-native-paper";
 
 export default function LoginScreen() {
   // State for form inputs
@@ -29,6 +30,7 @@ export default function LoginScreen() {
   const translateYAnim = useRef(new Animated.Value(50)).current;
   const buttonScaleAnim = useRef(new Animated.Value(1)).current;
   const {SettingToken}=useGlobalContext()
+  const [spin,setSpin]=useState(false)
   // Animation setup
   useEffect(() => {
     // Parallel animations for fade and translate
@@ -83,6 +85,7 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     try {
+      setSpin(true)
       const data = {
         email: useremail,
         password: userPassword,
@@ -96,12 +99,15 @@ export default function LoginScreen() {
         console.log(response.data.token)
         await AsyncStorage.setItem("first", "no");
         await SettingToken(response.data.token)
-        router.push("/(Screens)");
+        router.replace("/(Screens)");
       } else {
         setError(response.data.message);
       }
     } catch (error) {
       console.log(error);
+    }
+    finally{
+      setSpin(false)
     }
   };
 
@@ -199,8 +205,9 @@ export default function LoginScreen() {
               onPressIn={handlePressIn}
               onPressOut={handlePressOut}
               onPress={handleLogin}
+              disabled={spin}
             >
-              <Text className="text-white font-semibold text-lg">Sign In</Text>
+              {spin?<ActivityIndicator color="white"/>:<Text className="text-white font-semibold text-lg">Sign In</Text>}
             </TouchableOpacity>
           </Animated.View>
         </View>

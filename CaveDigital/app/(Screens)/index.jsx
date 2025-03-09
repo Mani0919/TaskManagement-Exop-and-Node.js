@@ -73,25 +73,20 @@ const HomeScreen = () => {
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-  
+
   // Animation values
   const searchWidthAnim = useRef(new Animated.Value(0)).current;
   const profileOpacity = useRef(new Animated.Value(1)).current;
   const searchOpacity = useRef(new Animated.Value(0)).current;
   const searchInputRef = useRef(null);
-  const {RemoveToken}=useGlobalContext()
+  const { RemoveToken } = useGlobalContext();
+  const [Isfirst, setIsfirst] = useState(true);
   // Properly implemented useFocusEffect
   useFocusEffect(
     React.useCallback(() => {
-      async function fetchData() {
-        if (message !== undefined) {
-          setSnackbarVisible(true);
-          setSnackbarMessage("Task deleted successfully");
-        }
-        await fetchTasks();
-      }
-      fetchData();
-    }, [message])
+      fetchUser()
+      fetchTasks()
+    }, [])
   );
 
   useEffect(() => {
@@ -104,6 +99,15 @@ const HomeScreen = () => {
     }
   }, [searchQuery, tasks]);
 
+  useEffect(() => {
+    async function IsFirst() {
+      const res = await AsyncStorage.getItem("first");
+      if (res) {
+        setIsfirst(false);
+      }
+    }
+    IsFirst();
+  }, []);
   const filterTasks = () => {
     if (!searchQuery.trim()) {
       setFilteredTasks(tasks);
@@ -202,6 +206,7 @@ const HomeScreen = () => {
   async function fetchUser() {
     try {
       const response = await AxiosService.request("/profile", "POST");
+      console.log(response.data)
       if (response.status === 200) {
         setUser(response.data.user.name);
       }
@@ -221,7 +226,7 @@ const HomeScreen = () => {
 
   const handleLogout = async () => {
     try {
-      await RemoveToken()
+      await RemoveToken();
       router.replace("/(auth)");
     } catch (error) {
       console.error("Logout failed", error);
@@ -260,7 +265,7 @@ const HomeScreen = () => {
         marginBottom: 12,
         borderRadius: 12,
         elevation: 2,
-        backgroundColor: Platform.OS === 'ios' ? '#FFFFFF' : '#FAFAFA',
+        backgroundColor: Platform.OS === "ios" ? "#FFFFFF" : "#FAFAFA",
       }}
       onPress={() =>
         router.push({
@@ -270,36 +275,45 @@ const HomeScreen = () => {
       }
     >
       <Card.Content style={{ paddingVertical: 12 }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-          <Text variant="titleMedium" style={{ flex: 1, fontWeight: '700' }}>{item.title}</Text>
-          <Chip 
-            style={{ 
-              backgroundColor: getPriorityColor(item.priority) + '20',
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 8,
+          }}
+        >
+          <Text variant="titleMedium" style={{ flex: 1, fontWeight: "700" }}>
+            {item.title}
+          </Text>
+          <Chip
+            style={{
+              backgroundColor: getPriorityColor(item.priority) + "20",
               borderRadius: 12,
             }}
-            textStyle={{ 
+            textStyle={{
               color: getPriorityColor(item.priority),
               fontSize: 12,
-              fontWeight: '600',
+              fontWeight: "600",
             }}
           >
             {getPriorityLabel(item.priority)}
           </Chip>
         </View>
-        
-        <Text 
-          variant="bodyMedium" 
-          style={{ color: '#666', marginBottom: 10 }}
+
+        <Text
+          variant="bodyMedium"
+          style={{ color: "#666", marginBottom: 10 }}
           numberOfLines={2}
         >
           {item.description}
         </Text>
-        
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
           <Ionicons name="calendar-outline" size={14} color="#6C757D" />
-          <Text 
-            variant="labelSmall" 
-            style={{ marginLeft: 6, color: '#6C757D' }}
+          <Text
+            variant="labelSmall"
+            style={{ marginLeft: 6, color: "#6C757D" }}
           >
             {item.dueDate}
           </Text>
@@ -311,68 +325,71 @@ const HomeScreen = () => {
   return (
     <PaperProvider theme={theme}>
       <StatusBar backgroundColor="#6200EE" style="light" />
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#F5F5F5' }} edges={["right","left"]}>
+      <SafeAreaView
+        style={{ flex: 1, backgroundColor: "#F5F5F5" }}
+        edges={["right", "left"]}
+      >
         <Stack.Screen
           options={{
             headerShown: false,
           }}
         />
 
-        <Appbar.Header 
-          style={{ 
-            backgroundColor: '#6200EE',
+        <Appbar.Header
+          style={{
+            backgroundColor: "#6200EE",
             elevation: 4,
           }}
         >
-          <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
             {/* Animated Profile Section */}
-            <Animated.View 
-              style={{ 
-                flexDirection: 'row', 
-                alignItems: 'center', 
+            <Animated.View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
                 flex: 1,
                 opacity: profileOpacity,
-                position: isSearchActive ? 'absolute' : 'relative',
+                position: isSearchActive ? "absolute" : "relative",
                 zIndex: isSearchActive ? -1 : 1,
-                marginLeft:15
+                marginLeft: 15,
               }}
             >
-              <Avatar.Text 
-                size={36} 
-                label={user?.charAt(0)?.toUpperCase() || "U"} 
-                style={{ 
-                  backgroundColor: getColorForLetter(user?.charAt(0)), 
-                  marginRight: 12 
+              <Avatar.Text
+                size={36}
+                label={user?.charAt(0)?.toUpperCase() || "U"}
+                style={{
+                  backgroundColor: getColorForLetter(user?.charAt(0)),
+                  marginRight: 12,
                 }}
               />
               <View>
-                <Text 
-                  variant="labelSmall" 
-                  style={{ color: 'rgba(255,255,255,0.8)' }}
+                <Text
+                  variant="labelSmall"
+                  style={{ color: "rgba(255,255,255,0.8)" }}
                 >
-                  Welcome back
+                  {!Isfirst?"Welcome back":"welcome"}
                 </Text>
-                <Text 
-                  variant="titleMedium" 
-                  style={{ color: '#fff', fontWeight: '700' }}
+                <Text
+                  variant="titleMedium"
+                  style={{ color: "#fff", fontWeight: "700" }}
                 >
                   {user}
                 </Text>
               </View>
             </Animated.View>
-            
+
             {/* Animated Search Input */}
             <Animated.View
               style={{
                 width: searchWidthAnim,
                 opacity: searchOpacity,
-                position: isSearchActive ? 'relative' : 'absolute',
+                position: isSearchActive ? "relative" : "absolute",
                 zIndex: isSearchActive ? 1 : -1,
-                flexDirection: 'row',
-                alignItems: 'center',
-                backgroundColor: 'rgba(255,255,255,0.2)',
+                flexDirection: "row",
+                alignItems: "center",
+                backgroundColor: "rgba(255,255,255,0.2)",
                 borderRadius: 8,
-                overflow: 'hidden',
+                overflow: "hidden",
                 height: 40,
               }}
             >
@@ -386,8 +403,8 @@ const HomeScreen = () => {
                 ref={searchInputRef}
                 style={{
                   flex: 1,
-                  color: '#fff',
-                  height: '100%',
+                  color: "#fff",
+                  height: "100%",
                   paddingVertical: 0,
                 }}
                 placeholder="Search tasks..."
@@ -405,7 +422,7 @@ const HomeScreen = () => {
               )}
             </Animated.View>
           </View>
-          
+
           <IconButton
             icon={isSearchActive ? "close" : "magnify"}
             iconColor="#fff"
@@ -413,7 +430,7 @@ const HomeScreen = () => {
             onPress={toggleSearch}
             style={{ margin: 0 }}
           />
-          
+
           <IconButton
             icon="logout"
             iconColor="#fff"
@@ -438,43 +455,46 @@ const HomeScreen = () => {
               />
             }
             ListEmptyComponent={
-              <View style={{ 
-                padding: 24, 
-                minHeight: 260, 
-                justifyContent: 'center', 
-                alignItems: 'center' 
-              }}>
+              <View
+                style={{
+                  padding: 24,
+                  minHeight: 260,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
                 {searchQuery ? (
-                  <View style={{ alignItems: 'center' }}>
+                  <View style={{ alignItems: "center" }}>
                     <Ionicons
                       name="search"
                       size={56}
                       color="#A78BFA"
                       style={{ marginBottom: 16 }}
                     />
-                    <Text 
-                      variant="headlineSmall" 
-                      style={{ 
-                        fontWeight: '700', 
+                    <Text
+                      variant="headlineSmall"
+                      style={{
+                        fontWeight: "700",
                         marginBottom: 8,
-                        color: '#1F2937'
+                        color: "#1F2937",
                       }}
                     >
                       No matching tasks found
                     </Text>
-                    <Text 
-                      variant="bodyMedium" 
-                      style={{ 
-                        textAlign: 'center', 
+                    <Text
+                      variant="bodyMedium"
+                      style={{
+                        textAlign: "center",
                         marginBottom: 24,
-                        color: '#6B7280',
+                        color: "#6B7280",
                         paddingHorizontal: 16,
                       }}
                     >
-                      We couldn't find any tasks matching "{searchQuery}". Try a different search term.
+                      We couldn't find any tasks matching "{searchQuery}". Try a
+                      different search term.
                     </Text>
-                    <Button 
-                      mode="contained" 
+                    <Button
+                      mode="contained"
                       onPress={() => setSearchQuery("")}
                       style={{ borderRadius: 8 }}
                     >
@@ -482,36 +502,37 @@ const HomeScreen = () => {
                     </Button>
                   </View>
                 ) : (
-                  <View style={{ alignItems: 'center' }}>
+                  <View style={{ alignItems: "center" }}>
                     <Ionicons
                       name="list"
                       size={56}
                       color="#9CA3AF"
                       style={{ marginBottom: 16 }}
                     />
-                    <Text 
-                      variant="headlineSmall" 
-                      style={{ 
-                        fontWeight: '700', 
+                    <Text
+                      variant="headlineSmall"
+                      style={{
+                        fontWeight: "700",
                         marginBottom: 8,
-                        color: '#1F2937'
+                        color: "#1F2937",
                       }}
                     >
                       Your task list is empty
                     </Text>
-                    <Text 
-                      variant="bodyMedium" 
-                      style={{ 
-                        textAlign: 'center', 
+                    <Text
+                      variant="bodyMedium"
+                      style={{
+                        textAlign: "center",
                         marginBottom: 24,
-                        color: '#6B7280',
-                        paddingHorizontal: 16
+                        color: "#6B7280",
+                        paddingHorizontal: 16,
                       }}
                     >
-                      Create your first task to get started tracking your daily responsibilities!
+                      Create your first task to get started tracking your daily
+                      responsibilities!
                     </Text>
-                    <Button 
-                      mode="contained" 
+                    <Button
+                      mode="contained"
                       onPress={() => router.push(`/task`)}
                       icon="plus"
                       style={{ borderRadius: 8 }}
@@ -527,11 +548,11 @@ const HomeScreen = () => {
           <FAB
             icon="plus"
             style={{
-              position: 'absolute',
+              position: "absolute",
               margin: 16,
               right: 0,
               bottom: 0,
-              backgroundColor: '#6200EE',
+              backgroundColor: "#6200EE",
               borderRadius: 28,
             }}
             color="#fff"
@@ -553,8 +574,8 @@ const HomeScreen = () => {
               <Button onPress={() => setLogoutDialogVisible(false)}>
                 Cancel
               </Button>
-              <Button 
-                mode="contained" 
+              <Button
+                mode="contained"
                 onPress={handleLogout}
                 style={{ borderRadius: 4 }}
               >
@@ -563,7 +584,7 @@ const HomeScreen = () => {
             </Dialog.Actions>
           </Dialog>
         </Portal>
-        
+
         <Snackbar
           visible={snackbarVisible}
           onDismiss={() => setSnackbarVisible(false)}

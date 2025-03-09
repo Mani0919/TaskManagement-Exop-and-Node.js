@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "CaveDigital",
+    "name": "TaskManagement",
     "slug": "CaveDigital",
-     "scheme": "CaveDigital",
+    "scheme": "CaveDigital",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -20,13 +20,22 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.eashan20.CaveDigital"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-router"
-    ]
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "9e2873be-5664-440c-8fdd-47a0a30e3cca"
+      }
+    }
   }
 }

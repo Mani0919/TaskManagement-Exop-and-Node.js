@@ -263,41 +263,42 @@ fetchTaskDetails()
                     </TouchableOpacity>
                   </>
                 ) : (
-                  <Menu
-                    visible={menuVisible}
-                    onDismiss={() => setMenuVisible(false)}
-                    anchor={
-                      <IconButton
-                        icon="dots-vertical"
-                        size={24}
-                        onPress={() => {
-                          Haptics.impactAsync(
-                            Haptics.ImpactFeedbackStyle.Light
-                          );
-                          setMenuVisible(true);
-                        }}
-                        color="#6B7280"
-                      />
-                    }
-                  >
-                    <Menu.Item
-                      onPress={() => {
-                        setMenuVisible(false);
-                        toggleEditMode();
-                      }}
-                      title="Edit Task"
-                      leadingIcon="pencil-outline"
-                    />
-                    <Menu.Item
-                      onPress={() => {
-                        setMenuVisible(false);
-                        setDeleteDialogVisible(true);
-                      }}
-                      title="Delete Task"
-                      leadingIcon="delete-outline"
-                      titleStyle={{ color: "#EF4444" }}
-                    />
-                  </Menu>
+                  <></>
+                  // <Menu
+                  //   visible={menuVisible}
+                  //   onDismiss={() => setMenuVisible(false)}
+                  //   anchor={
+                  //     <IconButton
+                  //       icon="dots-vertical"
+                  //       size={24}
+                  //       onPress={() => {
+                  //         Haptics.impactAsync(
+                  //           Haptics.ImpactFeedbackStyle.Light
+                  //         );
+                  //         setMenuVisible(true);
+                  //       }}
+                  //       color="#6B7280"
+                  //     />
+                  //   }
+                  // >
+                  //   <Menu.Item
+                  //     onPress={() => {
+                  //       setMenuVisible(false);
+                  //       toggleEditMode();
+                  //     }}
+                  //     title="Edit Task"
+                  //     leadingIcon="pencil-outline"
+                  //   />
+                  //   <Menu.Item
+                  //     onPress={() => {
+                  //       setMenuVisible(false);
+                  //       setDeleteDialogVisible(true);
+                  //     }}
+                  //     title="Delete Task"
+                  //     leadingIcon="delete-outline"
+                  //     titleStyle={{ color: "#EF4444" }}
+                  //   />
+                  // </Menu>
                 )}
               </View>
             ),
